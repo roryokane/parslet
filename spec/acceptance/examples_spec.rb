@@ -33,12 +33,20 @@ describe "Regression on" do
         end
       end
       
-      it "has any and all RSpec tests pass", :ruby => 1.9 do
+      it "contains only passing RSpec tests", :ruby => 1.9 do
         # this will also pass if the example has no RSpec tests
-        stdout_and_stderr_str, status = Open3.capture2e("rspec #{example}")
-        tests_passed = status.success?
-        unless tests_passed
-          fail "RSpec tests for example failed:\n" + stdout_and_stderr_str
+        
+        error_file = product_path(example, :err)
+        example_raises_error_when_run = File.exists?(error_file) && File.size?(error_file)
+        # `rspec` will fail if the code itself fails, so don't attempt testing in that case
+        unless example_raises_error_when_run
+          
+          stdout_and_stderr_str, status = Open3.capture2e("rspec #{example}")
+          tests_passed = status.success?
+          if ! tests_passed
+            fail "RSpec tests for example failed:\n" + stdout_and_stderr_str
+          end
+          
         end
       end
       
