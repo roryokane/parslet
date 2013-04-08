@@ -16,8 +16,6 @@ class NAThenNBParser < Parslet::Parser
 		str('a').repeat(0).capture(:a_s).as(:a_s) >>
 		dynamic do |source, context|
 			num_a_s = context.captures[:a_s].size
-			# FIXME Parslet bug: something.repeat(0,0) can match one something
-			#puts num_a_s
 			str('b').repeat(num_a_s, num_a_s).as(:b_s)
 		end
 	end
